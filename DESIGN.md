@@ -1,0 +1,6 @@
+# Design contract
+QazBid AI uses an enterprise procurement workbench: charcoal navigation, warm ivory document surfaces, cobalt actions, and restrained teal confirmations. These honor the explicit FinTech references in the user's brief. Seven grounded systems considered: procurement dossier, accounting ledger, logistics dispatch, bank terminal, warehouse register, specification desk, and analyst control room. The assigned seventh system informs the outcome-first analysis view: a clear decision strip followed by financial readings and evidence tables. No image comps are needed to demonstrate real document operations; user explicitly asked to start implementation autonomously.
+
+Typography: locally served Noto Sans with Cyrillic and Kazakh support. Tables and financial values use tabular figures. Spacing scale 4/8/12/16/24/32/48. Border-led surfaces with 12px corners, no ornamental gradients. Theme tokens implement light and dark. Primary app mode: Operate; landing: Persuade with a real demo analysis, no invented metrics.
+
+Evidence drawer keeps source page and inventory row visible. Status colors include text and icon; quantity shortages never masquerade as technical conformity. Desktop side navigation becomes a mobile menu. Wide matrices scroll within their own container. Forms retain visible labels, errors and focus indicators; reduced-motion respected.

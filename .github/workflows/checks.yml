@@ -1,0 +1,33 @@
+name: Checks
+on: [push, pull_request]
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+      - run: pip install -r apps/api/requirements.lock.txt
+      - run: python scripts/generate_demo.py
+      - run: cd apps/api && pytest
+      - run: cd apps/web && npm ci && npm run typecheck && npm run build
+      - run: cd apps/web && npx playwright install --with-deps firefox
+      - name: Start local stack
+        run: |
+          cd apps/api
+          python -m uvicorn qazbid.main:app --host 127.0.0.1 --port 8000 > /tmp/api.log 2>&1 &
+          cd ../web
+          npm run dev > /tmp/web.log 2>&1 &
+          for attempt in $(seq 1 60); do curl -fsS http://127.0.0.1:3000 && break || sleep 1; done
+      - run: cd apps/web && npx playwright test
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: test-traces
+          path: apps/web/test-results

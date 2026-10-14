@@ -1,0 +1,11 @@
+.venv
+**/node_modules
+**/.next
+**/.next-production
+runtime
+**/__pycache__
+**/.pytest_cache
+**/test-results
+work
+
+**/.next-*
