@@ -34,10 +34,10 @@ Copy `.env.example` to `.env` and set only the needed variables:
 
 ```dotenv
 GEMINI_API_KEY=your_private_key
-GEMINI_MODEL=gemini-2.5-flash
+GEMINI_MODEL=gemini-3.1-flash-lite
 ```
 
-Restart the stack. On New Analysis choose Gemini extraction. The official Google GenAI SDK uses Pydantic structured output, retries and exact-source checks. The model is configurable; choose a model supported by your account. **Document text is sent to Google in this mode.** Keys stay on the server. AI failure retains files and allows a deterministic retry. Matching, arithmetic and decision blockers stay deterministic.
+Restart the stack. On New Analysis choose Gemini extraction. The official Google GenAI SDK uses a compatible JSON schema, local Pydantic validation, retries and exact-source checks, including table quantity columns. Requirement values retain the document's exact wording. The model is configurable; choose a model supported by your account. **Document text is sent to Google in this mode.** Keys stay on the server. AI failure retains files and allows a deterministic retry. Matching, arithmetic and decision blockers stay deterministic. Live extraction with `gemini-3.1-flash-lite` passed on the bundled synthetic enamel PDF on 15 October 2026.
 
 Reference: [Google structured output documentation](https://ai.google.dev/gemini-api/docs/structured-output).
 
