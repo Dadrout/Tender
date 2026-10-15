@@ -37,7 +37,7 @@ import { Empty } from "./shared";
 function Logo() {
   return (
     <Link className="logo" href="/">
-      <span className="logo-symbol">
+      <span className="logo-symbol" aria-hidden="true">
         <ScanLine size={22} />
       </span>
       <span>
@@ -55,6 +55,7 @@ export function Preferences() {
           className={locale === "ru" ? "active" : ""}
           onClick={() => setLocale("ru")}
           aria-label="Русский"
+          aria-pressed={locale === "ru"}
         >
           RU
         </button>
@@ -62,6 +63,7 @@ export function Preferences() {
           className={locale === "kk" ? "active" : ""}
           onClick={() => setLocale("kk")}
           aria-label="Қазақша"
+          aria-pressed={locale === "kk"}
         >
           KZ
         </button>
@@ -70,6 +72,7 @@ export function Preferences() {
         className="icon-button"
         onClick={() => setDark(!dark)}
         aria-label={t("Сменить тему", "Тақырыпты өзгерту")}
+        aria-pressed={dark}
       >
         {dark ? <Sun size={18} /> : <Moon size={18} />}
       </button>
@@ -136,9 +139,17 @@ export function Application() {
     );
   return (
     <div className="app-layout">
+      <a className="skip-link" href="#main-content">
+        {t("Перейти к содержимому", "Мазмұнға өту")}
+      </a>
       <aside className={"sidebar " + (menu ? "is-open" : "")}>
         <div className="sidebar-top">
-          <Logo />
+          <div className="sidebar-brand">
+            <Logo />
+            <span className="brand-caption">
+              {t("Закупки и аналитика", "Сатып алу және талдау")}
+            </span>
+          </div>
           <button
             className="icon-button mobile-only"
             onClick={() => setMenu(false)}
@@ -157,22 +168,28 @@ export function Application() {
         <div className="nav-label">
           {t("РАБОЧЕЕ ПРОСТРАНСТВО", "ЖҰМЫС КЕҢІСТІГІ")}
         </div>
-        <nav>
+        <nav aria-label={t("Основная навигация", "Негізгі навигация")}>
           {nav.map((n) => (
             <Link
               key={n.href}
               href={n.href}
               onClick={() => setMenu(false)}
-              className={
+              aria-current={
                 path === n.href ||
                 (n.href === "/dashboard" && path.startsWith("/analyses/"))
+                  ? "page"
+                  : undefined
+              }
+              className={
+                (n.href === "/new" ? "nav-create " : "") +
+                (path === n.href ||
+                (n.href === "/dashboard" && path.startsWith("/analyses/"))
                   ? "selected"
-                  : ""
+                  : "")
               }
             >
-              <n.icon size={18} />
+              <n.icon size={18} aria-hidden="true" />
               <span>{n.label}</span>
-              {n.href === "/new" && <span className="nav-key">N</span>}
             </Link>
           ))}
         </nav>
@@ -210,6 +227,7 @@ export function Application() {
               className="icon-button mobile-only"
               onClick={() => setMenu(true)}
               aria-label={t("Открыть меню", "Мәзірді ашу")}
+              aria-expanded={menu}
             >
               <Menu size={21} />
             </button>
@@ -219,7 +237,9 @@ export function Application() {
           </div>
           <Preferences />
         </header>
-        <main className="main-content">{view}</main>
+        <main id="main-content" tabIndex={-1} className="main-content">
+          {view}
+        </main>
         <footer className="app-footer">
           <span>
             {t(

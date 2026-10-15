@@ -19,6 +19,7 @@ import {
   AlertTriangle,
   FileSpreadsheet,
   Compass,
+  SlidersHorizontal,
 } from "lucide-react";
 import { api, kzt, date } from "@/lib/api";
 import { Analysis, Discovery, Job } from "@/lib/types";
@@ -671,94 +672,129 @@ export function DiscoveryPage() {
           </p>
         </div>
       </div>
-      <div className="filter-grid">
-        <label className="field search-field">
-          {t("Поиск", "Іздеу")}
-          <span>
-            <Search size={16} />
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder={t(
-                "Название, товар, заказчик",
-                "Атауы, тауар, тапсырыс беруші",
+      <section
+        className="panel discovery-filters"
+        aria-labelledby="discovery-filters-title"
+      >
+        <div className="discovery-filters-heading">
+          <h2 id="discovery-filters-title">
+            <SlidersHorizontal size={18} aria-hidden="true" />
+            {t("Параметры поиска", "Іздеу параметрлері")}
+          </h2>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              setSearch("");
+              setRegion("");
+              setCategory("");
+              setBudget("");
+              setDeadline("");
+              setSource("");
+              setStatus("");
+            }}
+          >
+            <RotateCcw size={14} aria-hidden="true" />
+            {t("Сбросить фильтры", "Сүзгілерді тазарту")}
+          </Button>
+        </div>
+        <div className="filter-grid">
+          <label className="field search-field">
+            {t("Поиск", "Іздеу")}
+            <span>
+              <Search size={16} />
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder={t(
+                  "Название, товар, заказчик",
+                  "Атауы, тауар, тапсырыс беруші",
+                )}
+              />
+            </span>
+          </label>
+          <label className="field">
+            {t("Регион", "Өңір")}
+            <select value={region} onChange={(e) => setRegion(e.target.value)}>
+              <option value="">{t("Все регионы", "Барлық өңірлер")}</option>
+              {[...new Set(q.data?.map((d) => d.region).filter(Boolean))].map(
+                (r) => (
+                  <option key={r} value={r!}>
+                    {r}
+                  </option>
+                ),
               )}
+            </select>
+          </label>
+          <label className="field">
+            {t("Категория / товар", "Санат / тауар")}
+            <input
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
             />
-          </span>
-        </label>
-        <label className="field">
-          {t("Регион", "Өңір")}
-          <select value={region} onChange={(e) => setRegion(e.target.value)}>
-            <option value="">{t("Все регионы", "Барлық өңірлер")}</option>
-            {[...new Set(q.data?.map((d) => d.region).filter(Boolean))].map(
-              (r) => (
-                <option key={r} value={r!}>
-                  {r}
-                </option>
-              ),
-            )}
-          </select>
-        </label>
-        <label className="field">
-          {t("Категория / товар", "Санат / тауар")}
-          <input
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-          />
-        </label>
-        <label className="field">
-          {t("Бюджет до, ₸", "Бюджет шегі, ₸")}
-          <input
-            type="number"
-            min="0"
-            value={budget}
-            onChange={(e) => setBudget(e.target.value)}
-          />
-        </label>
-        <label className="field">
-          {t("Срок подачи до", "Өтінім мерзімі шегі")}
-          <input
-            type="date"
-            value={deadline}
-            onChange={(e) => setDeadline(e.target.value)}
-          />
-        </label>
-        <label className="field">
-          {t("Источник", "Дереккөз")}
-          <select value={source} onChange={(e) => setSource(e.target.value)}>
-            <option value="">{t("Все источники", "Барлық дереккөздер")}</option>
-            <option value="synthetic">
-              {t("Учебные примеры", "Оқу мысалдары")}
-            </option>
-            <option value="imported">
-              {t("Импортированные", "Импортталған")}
-            </option>
-          </select>
-        </label>
-        <label className="field">
-          {t("Решение анализа", "Талдау шешімі")}
-          <select value={status} onChange={(e) => setStatus(e.target.value)}>
-            <option value="">{t("Все решения", "Барлық шешімдер")}</option>
-            <option value="REQUIRES_ATTENTION">
-              {t("Требует внимания", "Назар аудару қажет")}
-            </option>
-            <option value="NOT_FEASIBLE">
-              {t("Невыполним", "Орындалмайды")}
-            </option>
-            <option value="READY_FOR_REVIEW">
-              {t("Готов к проверке", "Тексеруге дайын")}
-            </option>
-          </select>
-        </label>
-      </div>
+          </label>
+          <label className="field">
+            {t("Бюджет до, ₸", "Бюджет шегі, ₸")}
+            <input
+              type="number"
+              min="0"
+              value={budget}
+              onChange={(e) => setBudget(e.target.value)}
+            />
+          </label>
+          <label className="field">
+            {t("Срок подачи до", "Өтінім мерзімі шегі")}
+            <input
+              type="date"
+              value={deadline}
+              onChange={(e) => setDeadline(e.target.value)}
+            />
+          </label>
+          <label className="field">
+            {t("Источник", "Дереккөз")}
+            <select value={source} onChange={(e) => setSource(e.target.value)}>
+              <option value="">
+                {t("Все источники", "Барлық дереккөздер")}
+              </option>
+              <option value="synthetic">
+                {t("Учебные примеры", "Оқу мысалдары")}
+              </option>
+              <option value="imported">
+                {t("Импортированные", "Импортталған")}
+              </option>
+            </select>
+          </label>
+          <label className="field">
+            {t("Решение анализа", "Талдау шешімі")}
+            <select value={status} onChange={(e) => setStatus(e.target.value)}>
+              <option value="">{t("Все решения", "Барлық шешімдер")}</option>
+              <option value="REQUIRES_ATTENTION">
+                {t("Требует внимания", "Назар аудару қажет")}
+              </option>
+              <option value="NOT_FEASIBLE">
+                {t("Невыполним", "Орындалмайды")}
+              </option>
+              <option value="READY_FOR_REVIEW">
+                {t("Готов к проверке", "Тексеруге дайын")}
+              </option>
+            </select>
+          </label>
+        </div>
+      </section>
       {q.isLoading ? (
         <Loading />
       ) : q.isError ? (
         <ErrorState error={q.error} />
       ) : (
-        <section className="panel">
+        <section className="panel discovery-results">
+          <div className="results-heading">
+            <h2>{t("Закупки", "Сатып алулар")}</h2>
+            <span role="status" aria-live="polite">
+              {t("Найдено:", "Табылды:")} {data?.length || 0}
+            </span>
+          </div>
           <div className="table-scroll">
-            <table>
+            <table className="discovery-table">
               <thead>
                 <tr>
                   <th>{t("Закупка", "Сатып алу")}</th>

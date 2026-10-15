@@ -24,18 +24,23 @@ export function Providers({ children }: { children: React.ReactNode }) {
   );
   const [locale, setLocale] = useState<Locale>("ru");
   const [dark, setDark] = useState(false);
+  // Load stored choices before persistence effects can overwrite them with defaults.
+  const [preferencesLoaded, setPreferencesLoaded] = useState(false);
   useEffect(() => {
     setLocale(localStorage.getItem("qazbid-locale") === "kk" ? "kk" : "ru");
     setDark(localStorage.getItem("qazbid-theme") === "dark");
+    setPreferencesLoaded(true);
   }, []);
   useEffect(() => {
+    if (!preferencesLoaded) return;
     localStorage.setItem("qazbid-locale", locale);
     document.documentElement.lang = locale;
-  }, [locale]);
+  }, [locale, preferencesLoaded]);
   useEffect(() => {
+    if (!preferencesLoaded) return;
     localStorage.setItem("qazbid-theme", dark ? "dark" : "light");
     document.documentElement.dataset.theme = dark ? "dark" : "light";
-  }, [dark]);
+  }, [dark, preferencesLoaded]);
   return (
     <QueryClientProvider client={client}>
       <LocaleContext.Provider
