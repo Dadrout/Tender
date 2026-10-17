@@ -4,6 +4,9 @@ test("discovery filters can be cleared and announce restored results", async ({
   page,
 }) => {
   await page.goto("/discovery");
+  await page
+    .getByRole("button", { name: "Все документы", exact: true })
+    .click();
   await expect(page.getByRole("table")).toBeVisible();
   await page
     .getByRole("textbox", { name: "Поиск", exact: true })

@@ -3469,3 +3469,308 @@ main:focus {
     flex-basis: 100%;
   }
 }
+
+/* Catalog-to-decision radar, using the approved workspace tokens. */
+.discovery-views {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 24px 0;
+}
+.radar-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  margin: 28px 0 24px;
+}
+.radar-heading h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 24px;
+}
+.radar-heading h2 svg {
+  color: var(--primary);
+}
+.radar-heading p {
+  margin-top: 9px;
+  color: var(--muted);
+  font-size: 14px;
+}
+.radar-heading > .tag {
+  flex-shrink: 0;
+  white-space: normal;
+  max-width: 260px;
+}
+.radar-controls {
+  padding: 22px 24px;
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 18px;
+}
+.radar-controls > .field:first-child {
+  flex: 2;
+  min-width: 220px;
+}
+.radar-controls > .field:nth-child(2) {
+  flex: 1;
+  min-width: 180px;
+}
+.radar-controls .checkbox-label {
+  white-space: normal;
+}
+.radar-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+.radar-stats > div {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px 20px;
+}
+.radar-stats strong {
+  display: block;
+  font-size: 30px;
+  font-variant-numeric: tabular-nums;
+}
+.radar-stats span {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 6px;
+}
+.radar-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+  margin-top: 24px;
+  align-items: start;
+}
+.opportunity-card {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+.opportunity-top {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.opportunity-card h3 {
+  font-size: 20px;
+  line-height: 1.45;
+  text-wrap: balance;
+}
+.opportunity-location {
+  color: var(--muted);
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.opportunity-location svg {
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+.historical-note {
+  color: var(--warning);
+  font-size: 12px;
+  line-height: 1.7;
+}
+.opportunity-finance {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  padding: 18px 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.opportunity-finance span {
+  color: var(--muted);
+  font-size: 12px;
+  display: block;
+}
+.opportunity-finance strong {
+  font-size: 27px;
+  display: block;
+  margin-top: 9px;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.opportunity-signals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.opportunity-signals > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 5px 8px;
+  font-size: 12px;
+}
+.opportunity-estimate-note {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.8;
+}
+.opportunity-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: auto;
+}
+.opportunity-card .official-source {
+  font-size: 12px;
+}
+.radar-evidence {
+  border-top: 1px solid var(--border);
+  padding: 14px 0;
+}
+.radar-evidence > strong {
+  display: block;
+  margin: 8px 0;
+  font-size: 13px;
+}
+.radar-evidence p,
+.radar-evidence small {
+  font-size: 12px;
+}
+.radar-evidence small {
+  color: var(--muted);
+}
+.radar-evidence blockquote {
+  margin: 10px 0 0;
+  border-left: 2px solid var(--border);
+  padding-left: 12px;
+  color: var(--muted);
+  font-size: 12px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 180px;
+  overflow: auto;
+}
+.radar-warnings {
+  padding: 0 8px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.radar-warnings li {
+  margin: 8px 0;
+  overflow-wrap: anywhere;
+}
+.provenance-notice .text-link {
+  margin-top: 10px;
+}
+.decision-reasons {
+  padding: 22px 24px;
+  margin-top: 22px;
+}
+.decision-reasons h2 {
+  font-size: 16px;
+  margin-bottom: 18px;
+}
+.decision-reasons > div {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+.decision-reasons button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--subtle);
+  min-width: 0;
+}
+.decision-reasons button > svg:first-child {
+  color: var(--primary);
+  flex-shrink: 0;
+}
+.decision-reasons button > svg:last-child {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.decision-reasons strong,
+.decision-reasons small {
+  display: block;
+  font-size: 12px;
+}
+.decision-reasons small {
+  color: var(--muted);
+  margin-top: 5px;
+}
+.decision-reasons button:hover {
+  border-color: var(--primary);
+}
+@media (max-width: 1100px) {
+  .radar-grid {
+    grid-template-columns: 1fr;
+  }
+  .decision-reasons > div {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 760px) {
+  .radar-heading {
+    flex-direction: column;
+    gap: 14px;
+  }
+  .radar-heading h2 {
+    font-size: 22px;
+  }
+  .radar-controls {
+    padding: 18px 16px;
+    align-items: stretch;
+  }
+  .radar-controls > .field:first-child,
+  .radar-controls > .field:nth-child(2) {
+    min-width: 0;
+    flex-basis: 100%;
+  }
+  .radar-controls > .btn {
+    width: 100%;
+  }
+  .radar-stats {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .radar-stats > div {
+    padding: 16px;
+  }
+  .radar-stats strong {
+    font-size: 26px;
+  }
+  .opportunity-card {
+    padding: 20px 16px;
+  }
+  .opportunity-finance strong {
+    font-size: 24px;
+  }
+  .opportunity-actions > .btn {
+    width: 100%;
+  }
+  .decision-reasons {
+    padding: 20px 16px;
+  }
+  .opportunity-top .decision-badge {
+    max-width: 100%;
+  }
+}

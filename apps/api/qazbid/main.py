@@ -17,6 +17,8 @@ from sqlalchemy import delete
 from .database import *
 from .service import *
 from .schemas import Tender, Scenario, Product
+from .radar import collect_sources, rank_sources, default_scenario
+from pydantic import BaseModel, Field, ConfigDict
 from .inventory import read_frame, suggest_mapping
 from .reports import generate_pdf
 
@@ -28,6 +30,12 @@ def safe_cell(value):
     if isinstance(value, str) and value.lstrip().startswith(("=", "+", "-", "@")):
         return "'" + value
     return value
+
+
+class RadarImport(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    source_id: str = Field(min_length=1, max_length=150)
+    catalog_id: str = Field(min_length=1, max_length=100)
 
 
 def create_app(storage: Path | None = None):
@@ -293,6 +301,9 @@ def create_app(storage: Path | None = None):
         with factory.begin() as s:
             t = fetch(s, TenderRecord, aid)
             row = s.query(FinancialScenario).filter_by(tender_id=aid).one()
+            job = s.query(Job).filter_by(tender_id=aid).first()
+            if job and job.source.get("radar"):
+                job.source = {**job.source, "offer_price_confirmed": True}
             row.data = scenario.model_dump(mode="json")
             row.updated_at = now()
             return run_analysis(s, t)
@@ -473,6 +484,97 @@ def create_app(storage: Path | None = None):
         ]:
             raise HTTPException(404, "Файл не найден")
         return FileResponse(ROOT / "demo" / name, filename=name)
+
+    @app.get("/radar")
+    def opportunity_radar(catalog_id: str):
+        with factory() as s:
+            catalog = fetch(s, Catalog, catalog_id)
+            sources, warnings = collect_sources(s, ROOT)
+            return {
+                **rank_sources(sources, get_products(s, catalog_id)),
+                "catalog_id": catalog.id,
+                "catalog_name": catalog.name,
+                "warnings": warnings,
+            }
+
+    @app.get("/radar/source")
+    def radar_source(source_id: str):
+        with factory() as s:
+            sources, _ = collect_sources(s, ROOT)
+            source = next((v for v in sources if v["id"] == source_id), None)
+            if source is None:
+                raise HTTPException(404, "Источник не найден")
+            return FileResponse(
+                source["path"],
+                media_type="application/pdf",
+                headers={"Content-Disposition": 'inline; filename="source.pdf"'},
+            )
+
+    @app.post("/radar/analyze", status_code=201)
+    def radar_analyze(body: RadarImport):
+        copied = None
+        try:
+            with factory.begin() as s:
+                catalog = fetch(s, Catalog, body.catalog_id)
+                sources, _ = collect_sources(s, ROOT)
+                source = next((v for v in sources if v["id"] == body.source_id), None)
+                if source is None:
+                    raise HTTPException(404, "Источник не найден")
+                tender = source["tender"].model_copy(deep=True)
+                meta = {**source["provenance"], "source_id": body.source_id}
+                label = (
+                    "Исторический публичный документ"
+                    if meta["data_type"] == "historical"
+                    else (
+                        "Учебный пример"
+                        if tender.synthetic
+                        else "Импортированный документ"
+                    )
+                )
+                tender.source = label + (
+                    " · " + meta["source_url"] if meta.get("source_url") else ""
+                )
+                copied = files / (str(uuid4()) + ".pdf")
+                shutil.copyfile(source["path"], copied)
+                t = TenderRecord(
+                    organization_id=catalog.organization_id,
+                    catalog_id=catalog.id,
+                    mode=source["mode"],
+                    synthetic=False,
+                    data=tender.model_dump(mode="json"),
+                )
+                s.add(t)
+                s.flush()
+                s.add(
+                    DocumentRecord(
+                        tender_id=t.id,
+                        path=str(copied),
+                        name=source["path"].name,
+                        pages=source["pages"],
+                    )
+                )
+                s.add(
+                    FinancialScenario(
+                        tender_id=t.id,
+                        data=default_scenario(tender).model_dump(mode="json"),
+                    )
+                )
+                save_lines(s, t.id, tender)
+                s.add(
+                    Job(
+                        tender_id=t.id,
+                        status="review_ready",
+                        stage="review_ready",
+                        events=[{"stage": "radar_import", "at": now()}],
+                        source={"mode": source["mode"], "radar": meta},
+                    )
+                )
+                result = {"analysis_id": t.id}
+            return result
+        except Exception:
+            if copied:
+                copied.unlink(missing_ok=True)
+            raise
 
     @app.get("/discovery")
     def discovery():

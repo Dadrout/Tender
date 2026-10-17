@@ -1,8 +1,5 @@
 export type Status =
-  | "VERIFIED_MATCH"
-  | "CONFLICT"
-  | "PARTIAL_MATCH"
-  | "UNKNOWN";
+  "VERIFIED_MATCH" | "CONFLICT" | "PARTIAL_MATCH" | "UNKNOWN";
 export type Requirement = {
   key: string;
   label: string;
@@ -119,7 +116,7 @@ export type Scenario = {
 };
 export type Finance = {
   complete: boolean;
-  revenue: string;
+  revenue: string | null;
   inventory_cost: string | null;
   purchase_cost: string | null;
   delivery: string;
@@ -169,6 +166,7 @@ export type Risk = {
 };
 export type Analysis = {
   id: string;
+  provenance?: SourceProvenance | null;
   catalog_id: string;
   state: string;
   mode: string;
@@ -206,4 +204,55 @@ export type Discovery = Tender & {
   id: string;
   data_type: "synthetic" | "imported";
   live: boolean;
+};
+
+export type SourceProvenance = {
+  data_type: "historical" | "synthetic" | "imported";
+  historical: boolean;
+  live: boolean;
+  synthetic: boolean;
+  source_url?: string | null;
+  document_url?: string | null;
+  retrieved_at?: string | null;
+  registry_status?: string;
+  extraction_mode?: string;
+  label?: string;
+  title?: string;
+  location?: string;
+  sha256: string;
+};
+export type Opportunity = {
+  source_id: string;
+  title: string;
+  identifier: string | null;
+  region: string | null;
+  budget: string | null;
+  deadline: string | null;
+  provenance: SourceProvenance;
+  matched_items: number;
+  total_items: number;
+  relevant: boolean;
+  critical_conflicts: number;
+  unknown_requirements: number;
+  verified_requirements: number;
+  decision: NonNullable<Analysis["decision"]>;
+  financial: Finance;
+  estimate_unavailable_reason: string | null;
+  scenario: Scenario;
+  blockers: Risk[];
+  evidence: MatrixRow[];
+};
+export type RadarResponse = {
+  catalog_id: string;
+  catalog_name: string;
+  live: false;
+  warnings: string[];
+  opportunities: Opportunity[];
+  stats: {
+    evaluated: number;
+    candidates: number;
+    historical: number;
+    imported: number;
+    synthetic: number;
+  };
 };

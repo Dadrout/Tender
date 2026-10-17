@@ -32,3 +32,7 @@ All paths below are backend paths; browser accesses /api + path via Next.js prox
 Limits: 15 MB per file, 100 PDF pages, 5000 catalog products, 100 columns; bounded XLSX decompression; optional OCR 30 seconds per page. AI input 120k characters, maximum 10k output tokens, 45-second request timeout, two attempts. Schema errors return 422; missing entities 404; state conflicts 409. Wrong file types, nonnumeric amounts, unknown catalogs, unsupported OCR, and unavailable AI produce honest errors.
 
 Browser mutations accept configured local origins. QAZBID_ALLOWED_ORIGINS can declare a comma-separated explicit allowlist for other development hostnames. This is CSRF mitigation, not authentication.
+
+## Локальный подбор
+
+`GET /radar?catalog_id=<id>` оценивает доступные документы существующими движками. Возвращает фактические счётчики, происхождение, конфликты, неизвестные требования, условную экономику и ограничения. `GET /radar/source?source_id=<id>` отдаёт только зарегистрированный исходный PDF. `POST /radar/analyze` принимает `{"source_id":"demo:enamel","catalog_id":"…"}` и создаёт анализ в состоянии review с отдельной копией оригинала. Он сохраняется при сбросе демонстрации. Исторический публичный документ сохраняет происхождение во всех дальнейших результатах. При отсутствии бюджета прибыль остаётся неизвестной до явного сохранения сценария пользователя через PUT /analyses/{id}/scenario.

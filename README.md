@@ -89,3 +89,11 @@ Lightweight PDF rules handle labeled blocks and common tables; complex prose may
 ## Licenses
 
 Original application code is distributed under MIT (`LICENSE`). Included Noto Sans fonts are under SIL Open Font License; see `docs/Noto-LICENSE.txt`. Next.js, React, FastAPI, SQLAlchemy, Recharts, Radix UI, Lucide, ReportLab, pandas/openpyxl and Google GenAI retain their respective licenses. PyMuPDF is [AGPL/commercial dual-licensed](https://pymupdf.readthedocs.io/en/latest/about.html#license-and-copyright): review its licensing requirements before distributing a closed-source derivative or operating a proprietary service. This acknowledgement is not a licensing opinion.
+
+## Opportunity Radar
+
+«Возможности» по умолчанию подбирает доступные документы под выбранный каталог. Карточки показывают покрытие позиций, конфликты, неизвестные требования и условную прибыль с явными допущениями. Это локальная подборка, без онлайн-сканирования порталов и вероятностей победы. Открытие карточки создаёт проверяемый анализ с исходным PDF и выбранным каталогом.
+
+В `data/public-tenders` сохранены оригинальные публичные PDF и контрольные суммы. Спецификация бумаги для Тараза от 28.08.2019 прошла настоящий вызов Gemini и повторную проверку цитат. Архивный статус подписан явно; отсутствующий бюджет остаётся неизвестным. Сканированный PDF Goszakup служит отрицательной проверкой OCR. Подробнее: [проверка оригиналов](docs/real-tender-validation.md), [демо за 90 секунд](docs/demo-script-ru.md).
+
+API: `GET /radar?catalog_id=…`, `GET /radar/source?source_id=…`, `POST /radar/analyze` с `source_id` и `catalog_id`. Пересчёт использует существующие независимые движки сопоставления, финансов и рисков.

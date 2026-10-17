@@ -46,3 +46,11 @@ Verification boundaries:
 - Russian/Kazakh OCR was **not executed**. This host's Tesseract has only eng/chi_sim; unsupported scans produce explicit OCR-needed errors. Container has no OCR packages by default.
 - Remote GitHub Actions execution was **not run**. The workflow configuration is supplied.
 - pytest emitted one dependency deprecation warning from Starlette TestClient's httpx compatibility. This did not fail tests. Playwright emitted the host's NO_COLOR/FORCE_COLOR warning; browser scenarios passed.
+
+## Проверка Opportunity Radar — 17.10.2026
+
+- Сервер: 50 проверок пройдены, включая строгие цитаты Gemini, оригиналы с SHA256, неизвестную цену и PDF-отчёт без неё, полную ячейку характеристик, сокращённые названия и вертикальные таблицы.
+- Интерфейс: 11 браузерных сценариев пройдены: подбор/проверка/решение, отсутствие совпадений, исторический документ, мобильные размеры, RU/KZ, светлая/тёмная тема, экспорт и сохранение.
+- TypeScript и production-сборка Next.js завершены успешно. Docker-образ в этой итерации не пересобирался.
+- Настоящий вызов Gemini на оригинальной спецификации бумаги для Тараза 2019 года прошёл строгую проверку источников. Повторные тесты используют сохранённый ответ; онлайн-сканирование порталов не выполняется.
+- Независимое ревью выявило неизвестную цену, полноту характеристик, оплату в вертикальной таблице и дублирование позиции; исправления проверены регрессиями.

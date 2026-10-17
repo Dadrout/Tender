@@ -42,6 +42,7 @@ import { api, kzt, date } from "@/lib/api";
 import { useLocale } from "@/lib/context";
 import { Button } from "./ui/button";
 import { Dialog } from "./ui/dialog";
+import { ProvenanceNotice } from "./radar";
 import {
   PageHeading,
   ErrorState,
@@ -76,14 +77,17 @@ export function AnalysisWorkspace({ id }: { id: string }) {
   const a = q.data;
   if (a.state === "review" || editing)
     return (
-      <Review
-        a={a}
-        onFinish={() => {
-          setEditing(false);
-          q.refetch();
-        }}
-        onCancel={editing ? () => setEditing(false) : undefined}
-      />
+      <>
+        <ProvenanceNotice source={a.provenance} />
+        <Review
+          a={a}
+          onFinish={() => {
+            setEditing(false);
+            q.refetch();
+          }}
+          onCancel={editing ? () => setEditing(false) : undefined}
+        />
+      </>
     );
   const tabs = [
     ["summary", t("Обзор и решение", "Шолу және шешім")],
@@ -115,6 +119,7 @@ export function AnalysisWorkspace({ id }: { id: string }) {
           </Button>
         }
       />
+      <ProvenanceNotice source={a.provenance} />
       <div className="analysis-meta">
         <span
           className={"tag " + (a.tender.synthetic ? "tag-amber" : "tag-blue")}
@@ -225,6 +230,51 @@ function Summary({
           {t("Что проверить", "Нені тексеру керек")}
           <ArrowRight size={15} />
         </Button>
+      </section>
+      <section
+        className="panel decision-reasons"
+        aria-labelledby="decision-reasons-heading"
+      >
+        <h2 id="decision-reasons-heading">
+          {t("Почему такое решение", "Бұл шешімнің себебі")}
+        </h2>
+        <div>
+          <button onClick={openMatrix}>
+            <FileSearch size={18} aria-hidden="true" />
+            <span>
+              <strong>{t("Требования", "Талаптар")}</strong>
+              <small>
+                {counts.CONFLICT} {t("конфликтов", "қайшылық")} ·{" "}
+                {counts.UNKNOWN} {t("без подтверждения", "расталмаған")}
+              </small>
+            </span>
+            <ArrowRight size={15} aria-hidden="true" />
+          </button>
+          <button onClick={openFinance}>
+            <SlidersHorizontal size={18} aria-hidden="true" />
+            <span>
+              <strong>{t("Экономика сценария", "Сценарий экономикасы")}</strong>
+              <small>
+                {a.financial?.complete
+                  ? kzt(a.financial.profit)
+                  : t("Расчёт неполный", "Есеп толық емес")}
+              </small>
+            </span>
+            <ArrowRight size={15} aria-hidden="true" />
+          </button>
+          <button onClick={openRisks}>
+            <AlertTriangle size={18} aria-hidden="true" />
+            <span>
+              <strong>
+                {t("До участия проверить", "Қатысу алдында тексеру")}
+              </strong>
+              <small>
+                {blockers.length} {t("существенных вопросов", "маңызды сұрақ")}
+              </small>
+            </span>
+            <ArrowRight size={15} aria-hidden="true" />
+          </button>
+        </div>
       </section>
       <FinanceMetrics a={a} />
       <div className="results-grid">

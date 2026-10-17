@@ -25,6 +25,7 @@ import { api, kzt, date } from "@/lib/api";
 import { Analysis, Discovery, Job } from "@/lib/types";
 import { useLocale } from "@/lib/context";
 import { Button } from "./ui/button";
+import { OpportunityRadar } from "./radar";
 import {
   DecisionBadge,
   Empty,
@@ -615,6 +616,7 @@ export function Reports() {
   );
 }
 export function DiscoveryPage() {
+  const [discoveryView, setDiscoveryView] = useState("radar");
   const { t } = useLocale();
   const [search, setSearch] = useState("");
   const [region, setRegion] = useState("");
@@ -666,197 +668,234 @@ export function DiscoveryPage() {
           </strong>
           <p>
             {t(
-              "Goszakup и Самрук-Қазына здесь не подключены. Все записи явно помечены источником.",
-              "Goszakup және Самұрық-Қазына қосылмаған. Әр жазбаның дереккөзі көрсетілген.",
+              "Онлайн-сканирование не выполняется. Используются ваши импорты и архивные документы; каждый источник помечен.",
+              "Онлайн сканерлеу орындалмайды. Сіздің импорттарыңыз бен мұрағат құжаттары пайдаланылады; әр дереккөз белгіленген.",
             )}
           </p>
         </div>
       </div>
-      <section
-        className="panel discovery-filters"
-        aria-labelledby="discovery-filters-title"
+      <div
+        className="discovery-views"
+        role="group"
+        aria-label={t("Режим поиска", "Іздеу режимі")}
       >
-        <div className="discovery-filters-heading">
-          <h2 id="discovery-filters-title">
-            <SlidersHorizontal size={18} aria-hidden="true" />
-            {t("Параметры поиска", "Іздеу параметрлері")}
-          </h2>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              setSearch("");
-              setRegion("");
-              setCategory("");
-              setBudget("");
-              setDeadline("");
-              setSource("");
-              setStatus("");
-            }}
-          >
-            <RotateCcw size={14} aria-hidden="true" />
-            {t("Сбросить фильтры", "Сүзгілерді тазарту")}
-          </Button>
-        </div>
-        <div className="filter-grid">
-          <label className="field search-field">
-            {t("Поиск", "Іздеу")}
-            <span>
-              <Search size={16} />
-              <input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder={t(
-                  "Название, товар, заказчик",
-                  "Атауы, тауар, тапсырыс беруші",
-                )}
-              />
-            </span>
-          </label>
-          <label className="field">
-            {t("Регион", "Өңір")}
-            <select value={region} onChange={(e) => setRegion(e.target.value)}>
-              <option value="">{t("Все регионы", "Барлық өңірлер")}</option>
-              {[...new Set(q.data?.map((d) => d.region).filter(Boolean))].map(
-                (r) => (
-                  <option key={r} value={r!}>
-                    {r}
-                  </option>
-                ),
-              )}
-            </select>
-          </label>
-          <label className="field">
-            {t("Категория / товар", "Санат / тауар")}
-            <input
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-            />
-          </label>
-          <label className="field">
-            {t("Бюджет до, ₸", "Бюджет шегі, ₸")}
-            <input
-              type="number"
-              min="0"
-              value={budget}
-              onChange={(e) => setBudget(e.target.value)}
-            />
-          </label>
-          <label className="field">
-            {t("Срок подачи до", "Өтінім мерзімі шегі")}
-            <input
-              type="date"
-              value={deadline}
-              onChange={(e) => setDeadline(e.target.value)}
-            />
-          </label>
-          <label className="field">
-            {t("Источник", "Дереккөз")}
-            <select value={source} onChange={(e) => setSource(e.target.value)}>
-              <option value="">
-                {t("Все источники", "Барлық дереккөздер")}
-              </option>
-              <option value="synthetic">
-                {t("Учебные примеры", "Оқу мысалдары")}
-              </option>
-              <option value="imported">
-                {t("Импортированные", "Импортталған")}
-              </option>
-            </select>
-          </label>
-          <label className="field">
-            {t("Решение анализа", "Талдау шешімі")}
-            <select value={status} onChange={(e) => setStatus(e.target.value)}>
-              <option value="">{t("Все решения", "Барлық шешімдер")}</option>
-              <option value="REQUIRES_ATTENTION">
-                {t("Требует внимания", "Назар аудару қажет")}
-              </option>
-              <option value="NOT_FEASIBLE">
-                {t("Невыполним", "Орындалмайды")}
-              </option>
-              <option value="READY_FOR_REVIEW">
-                {t("Готов к проверке", "Тексеруге дайын")}
-              </option>
-            </select>
-          </label>
-        </div>
-      </section>
-      {q.isLoading ? (
-        <Loading />
-      ) : q.isError ? (
-        <ErrorState error={q.error} />
+        <Button
+          variant={discoveryView === "radar" ? "default" : "secondary"}
+          aria-pressed={discoveryView === "radar"}
+          onClick={() => setDiscoveryView("radar")}
+        >
+          {t("Подбор по каталогу", "Каталог бойынша іріктеу")}
+        </Button>
+        <Button
+          variant={discoveryView === "documents" ? "default" : "secondary"}
+          aria-pressed={discoveryView === "documents"}
+          onClick={() => setDiscoveryView("documents")}
+        >
+          {t("Все документы", "Барлық құжаттар")}
+        </Button>
+      </div>
+      {discoveryView === "radar" ? (
+        <OpportunityRadar />
       ) : (
-        <section className="panel discovery-results">
-          <div className="results-heading">
-            <h2>{t("Закупки", "Сатып алулар")}</h2>
-            <span role="status" aria-live="polite">
-              {t("Найдено:", "Табылды:")} {data?.length || 0}
-            </span>
-          </div>
-          <div className="table-scroll">
-            <table className="discovery-table">
-              <thead>
-                <tr>
-                  <th>{t("Закупка", "Сатып алу")}</th>
-                  <th>{t("Источник", "Дереккөз")}</th>
-                  <th>{t("Бюджет", "Бюджет")}</th>
-                  <th>{t("Срок", "Мерзім")}</th>
-                  <th />
-                </tr>
-              </thead>
-              <tbody>
-                {data?.map((d) => (
-                  <tr key={d.id}>
-                    <td>
-                      <strong>{d.title}</strong>
-                      <small>
-                        {d.region || t("Не указано", "Көрсетілмеген")}
-                      </small>
-                    </td>
-                    <td>
-                      <span
-                        className={
-                          "tag " +
-                          (d.data_type === "synthetic"
-                            ? "tag-amber"
-                            : "tag-blue")
-                        }
-                      >
-                        {d.data_type === "synthetic"
-                          ? t("Учебный пример", "Оқу мысалы")
-                          : t("Импорт", "Импорт")}
-                      </span>
-                    </td>
-                    <td className="number-cell">{kzt(d.budget)}</td>
-                    <td>{d.deadline || "—"}</td>
-                    <td>
-                      <Button asChild variant="ghost">
-                        <Link
-                          href={
-                            ["enamel", "brushes", "buckets"].includes(d.id)
-                              ? "/demo"
-                              : "/analyses/" + d.id
-                          }
-                        >
-                          {t("Открыть", "Ашу")}
-                          <ArrowUpRight size={15} />
-                        </Link>
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            {!data?.length && (
-              <p className="panel-empty">
-                {t(
-                  "Нет результатов. Измените фильтры.",
-                  "Нәтиже жоқ. Сүзгілерді өзгертіңіз.",
+        <>
+          <section
+            className="panel discovery-filters"
+            aria-labelledby="discovery-filters-title"
+          >
+            <div className="discovery-filters-heading">
+              <h2 id="discovery-filters-title">
+                <SlidersHorizontal size={18} aria-hidden="true" />
+                {t("Параметры поиска", "Іздеу параметрлері")}
+              </h2>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setSearch("");
+                  setRegion("");
+                  setCategory("");
+                  setBudget("");
+                  setDeadline("");
+                  setSource("");
+                  setStatus("");
+                }}
+              >
+                <RotateCcw size={14} aria-hidden="true" />
+                {t("Сбросить фильтры", "Сүзгілерді тазарту")}
+              </Button>
+            </div>
+            <div className="filter-grid">
+              <label className="field search-field">
+                {t("Поиск", "Іздеу")}
+                <span>
+                  <Search size={16} />
+                  <input
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder={t(
+                      "Название, товар, заказчик",
+                      "Атауы, тауар, тапсырыс беруші",
+                    )}
+                  />
+                </span>
+              </label>
+              <label className="field">
+                {t("Регион", "Өңір")}
+                <select
+                  value={region}
+                  onChange={(e) => setRegion(e.target.value)}
+                >
+                  <option value="">{t("Все регионы", "Барлық өңірлер")}</option>
+                  {[
+                    ...new Set(q.data?.map((d) => d.region).filter(Boolean)),
+                  ].map((r) => (
+                    <option key={r} value={r!}>
+                      {r}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="field">
+                {t("Категория / товар", "Санат / тауар")}
+                <input
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                />
+              </label>
+              <label className="field">
+                {t("Бюджет до, ₸", "Бюджет шегі, ₸")}
+                <input
+                  type="number"
+                  min="0"
+                  value={budget}
+                  onChange={(e) => setBudget(e.target.value)}
+                />
+              </label>
+              <label className="field">
+                {t("Срок подачи до", "Өтінім мерзімі шегі")}
+                <input
+                  type="date"
+                  value={deadline}
+                  onChange={(e) => setDeadline(e.target.value)}
+                />
+              </label>
+              <label className="field">
+                {t("Источник", "Дереккөз")}
+                <select
+                  value={source}
+                  onChange={(e) => setSource(e.target.value)}
+                >
+                  <option value="">
+                    {t("Все источники", "Барлық дереккөздер")}
+                  </option>
+                  <option value="synthetic">
+                    {t("Учебные примеры", "Оқу мысалдары")}
+                  </option>
+                  <option value="imported">
+                    {t("Импортированные", "Импортталған")}
+                  </option>
+                </select>
+              </label>
+              <label className="field">
+                {t("Решение анализа", "Талдау шешімі")}
+                <select
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value)}
+                >
+                  <option value="">
+                    {t("Все решения", "Барлық шешімдер")}
+                  </option>
+                  <option value="REQUIRES_ATTENTION">
+                    {t("Требует внимания", "Назар аудару қажет")}
+                  </option>
+                  <option value="NOT_FEASIBLE">
+                    {t("Невыполним", "Орындалмайды")}
+                  </option>
+                  <option value="READY_FOR_REVIEW">
+                    {t("Готов к проверке", "Тексеруге дайын")}
+                  </option>
+                </select>
+              </label>
+            </div>
+          </section>
+          {q.isLoading ? (
+            <Loading />
+          ) : q.isError ? (
+            <ErrorState error={q.error} />
+          ) : (
+            <section className="panel discovery-results">
+              <div className="results-heading">
+                <h2>{t("Закупки", "Сатып алулар")}</h2>
+                <span role="status" aria-live="polite">
+                  {t("Найдено:", "Табылды:")} {data?.length || 0}
+                </span>
+              </div>
+              <div className="table-scroll">
+                <table className="discovery-table">
+                  <thead>
+                    <tr>
+                      <th>{t("Закупка", "Сатып алу")}</th>
+                      <th>{t("Источник", "Дереккөз")}</th>
+                      <th>{t("Бюджет", "Бюджет")}</th>
+                      <th>{t("Срок", "Мерзім")}</th>
+                      <th />
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {data?.map((d) => (
+                      <tr key={d.id}>
+                        <td>
+                          <strong>{d.title}</strong>
+                          <small>
+                            {d.region || t("Не указано", "Көрсетілмеген")}
+                          </small>
+                        </td>
+                        <td>
+                          <span
+                            className={
+                              "tag " +
+                              (d.data_type === "synthetic"
+                                ? "tag-amber"
+                                : "tag-blue")
+                            }
+                          >
+                            {d.data_type === "synthetic"
+                              ? t("Учебный пример", "Оқу мысалы")
+                              : t("Импорт", "Импорт")}
+                          </span>
+                        </td>
+                        <td className="number-cell">{kzt(d.budget)}</td>
+                        <td>{d.deadline || "—"}</td>
+                        <td>
+                          <Button asChild variant="ghost">
+                            <Link
+                              href={
+                                ["enamel", "brushes", "buckets"].includes(d.id)
+                                  ? "/demo"
+                                  : "/analyses/" + d.id
+                              }
+                            >
+                              {t("Открыть", "Ашу")}
+                              <ArrowUpRight size={15} />
+                            </Link>
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {!data?.length && (
+                  <p className="panel-empty">
+                    {t(
+                      "Нет результатов. Измените фильтры.",
+                      "Нәтиже жоқ. Сүзгілерді өзгертіңіз.",
+                    )}
+                  </p>
                 )}
-              </p>
-            )}
-          </div>
-        </section>
+              </div>
+            </section>
+          )}
+        </>
       )}
     </>
   );

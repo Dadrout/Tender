@@ -104,6 +104,69 @@ def extract_pdf(path: Path, allow_ocr: bool = True) -> list[dict]:
         return pages
 
 
+def vertical_spec(table):
+    """Recognize a two-column parameter/value specification, not a product grid."""
+    if not table or len(table[0]) != 2:
+        return None
+    clean = lambda v: " ".join(str(v or "").lower().split())
+    headers = [clean(c) for c in table[0]]
+    if headers[0] not in {"наименование", "параметр", "характеристика"} or headers[
+        1
+    ] not in {"значение", "мәні"}:
+        return None
+    fields = {}
+    for row in table[1:]:
+        if len(row) != 2 or not row[1]:
+            continue
+        key = clean(row[0])
+        field = (
+            "name"
+            if key
+            in {"наименование и краткая характеристика", "наименование товара", "товар"}
+            else (
+                "quantity"
+                if re.fullmatch(LABELS["quantity"], key, re.I)
+                else (
+                    "unit"
+                    if "единица измерения" in key
+                    else (
+                        "region"
+                        if key == "место поставки"
+                        else (
+                            "delivery"
+                            if key == "срок поставки"
+                            else (
+                                "payment"
+                                if key == "условия оплаты"
+                                else (
+                                    "characteristics"
+                                    if key == "дополнительная характеристика"
+                                    else None
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        )
+        if field:
+            if field in fields:
+                return None
+            fields[field] = str(row[1]).strip()
+    return fields if "name" in fields and "quantity" in fields else None
+
+
+def source_span(text, *values):
+    matches = []
+    for value in values:
+        pattern = r"\s+".join(re.escape(part) for part in str(value).split())
+        match = re.search(pattern, text, re.I)
+        if not match:
+            return None
+        matches.append(match)
+    return text[min(m.start() for m in matches) : max(m.end() for m in matches)]
+
+
 def parse_tender(pages: list[dict]) -> Tender:
     t = Tender()
     current = None
@@ -195,6 +258,66 @@ def parse_tender(pages: list[dict]) -> Tender:
         page_text_items = list(t.items[page_start:])
         for table in p.get("tables", []):
             if not table or not table[0]:
+                continue
+            spec = vertical_spec(table)
+            if spec:
+                quote = source_span(
+                    p["text"], spec["name"], "Количество", spec["quantity"]
+                )
+                item = LineItem(
+                    name=spec["name"],
+                    quantity=number(spec["quantity"]),
+                    unit=spec.get("unit", ""),
+                    page=p["page"],
+                    evidence=quote or spec["name"],
+                )
+                if value := spec.get("characteristics"):
+                    if len(value) <= 1000:
+                        item.requirements.append(
+                            Requirement(
+                                key="characteristics",
+                                label="Технические характеристики",
+                                value=value,
+                                page=p["page"],
+                                evidence=value,
+                            )
+                        )
+                    else:
+                        t.warnings.append(
+                            "Длинные характеристики требуют проверки и извлечения Gemini."
+                        )
+                duplicate = next(
+                    (
+                        i
+                        for i in page_text_items
+                        if i.name == item.name and i.quantity == item.quantity
+                    ),
+                    None,
+                )
+                if duplicate:
+                    duplicate.requirements.extend(item.requirements)
+                    duplicate.unit = duplicate.unit or item.unit
+                else:
+                    t.items.append(item)
+                if t.title == "Загруженная спецификация":
+                    t.title = item.name
+                t.region = t.region or spec.get("region")
+                if not t.identifier and (
+                    lot := re.search(r"Лот\s*№\s*(\d+)", p["text"])
+                ):
+                    t.identifier = lot[1]
+                if value := spec.get("delivery"):
+                    t.delivery_evidence, t.delivery_page = value, p["page"]
+                    if days := re.search(
+                        r"(\d+)\s*(?:календарн\w*\s*)?(?:дн|күн)", value, re.I
+                    ):
+                        t.delivery_days = int(days[1])
+                if value := spec.get("payment"):
+                    t.payment_evidence, t.payment_page = value, p["page"]
+                    if n := re.search(
+                        r"(\d+)\s*(?:календарных\s+|рабочих\s+)?дн", value, re.I
+                    ):
+                        t.payment_days = int(n[1])
                 continue
             headers = [str(h or "").lower() for h in table[0]]
             ni = next(

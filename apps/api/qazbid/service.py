@@ -70,7 +70,10 @@ def create_catalog(s, path, name, synthetic=False, mapping=None):
 def analysis_data(s, t):
     scenario = s.query(FinancialScenario).filter_by(tender_id=t.id).one()
     doc = s.query(DocumentRecord).filter_by(tender_id=t.id).first()
+    job = s.query(Job).filter_by(tender_id=t.id).first()
+    provenance = job.source.get("radar") if job else None
     return {
+        "provenance": provenance,
         "id": t.id,
         "catalog_id": t.catalog_id,
         "state": t.state,
@@ -92,6 +95,22 @@ def run_analysis(s, t):
     scen = Scenario.model_validate(scenario.data)
     matches = match_tender(tender, get_products(s, t.catalog_id))
     financial = calculate(matches["cost_lines"], scen)
+    job = s.query(Job).filter_by(tender_id=t.id).first()
+    if (
+        job
+        and job.source.get("radar")
+        and tender.budget is None
+        and not job.source.get("offer_price_confirmed")
+    ):
+        financial.update(
+            complete=False, revenue=None, profit=None, margin=None, cash_flow=[]
+        )
+        financial["warnings"] = [
+            w for w in financial["warnings"] if w != "Отрицательная расчётная прибыль"
+        ]
+        financial["warnings"].append(
+            "Цена предложения не задана: укажите её в симуляторе и пересчитайте."
+        )
     risks, decision = assess(tender, matches, financial, scen)
     t.result = {
         "matches": matches,
