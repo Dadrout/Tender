@@ -5,12 +5,6 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   LayoutDashboard,
-  ScanLine,
-  Boxes,
-  Compass,
-  FileText,
-  FlaskConical,
-  Plus,
   ArrowUpRight,
   ArrowRight,
   Sun,
@@ -18,12 +12,11 @@ import {
   Menu,
   X,
   ShieldCheck,
-  ChartNoAxesCombined,
-  FileSearch,
   Check,
   MapPin,
   ChevronRight,
 } from "lucide-react";
+import { BrandIcon, QazBidMark } from "./brand";
 import { useLocale } from "@/lib/context";
 import { api, kzt, date } from "@/lib/api";
 import { Analysis, Discovery } from "@/lib/types";
@@ -37,12 +30,10 @@ import { Empty } from "./shared";
 function Logo() {
   return (
     <Link className="logo" href="/">
-      <span className="logo-symbol" aria-hidden="true">
-        <ScanLine size={22} />
+      <span className="logo-symbol">
+        <QazBidMark size={36} />
       </span>
-      <span>
-        QazBid <b>AI</b>
-      </span>
+      <span>QazBid <b>AI</b></span>
     </Link>
   );
 }
@@ -91,23 +82,35 @@ export function Application() {
   });
   if (path === "/") return <Landing />;
   const nav = [
-    { href: "/dashboard", label: t("Обзор", "Шолу"), icon: LayoutDashboard },
-    { href: "/new", label: t("Новый анализ", "Жаңа талдау"), icon: Plus },
+    {
+      href: "/dashboard",
+      label: t("Обзор", "Шолу"),
+      icon: <LayoutDashboard size={18} aria-hidden="true" />,
+    },
+    {
+      href: "/new",
+      label: t("Новый анализ", "Жаңа талдау"),
+      icon: <BrandIcon name="tender-document" size={18} />,
+    },
     {
       href: "/discovery",
       label: t("Возможности", "Мүмкіндіктер"),
-      icon: Compass,
+      icon: <BrandIcon name="product-match" size={18} />,
     },
     {
       href: "/inventory",
       label: t("Мой каталог", "Менің каталогым"),
-      icon: Boxes,
+      icon: <BrandIcon name="catalog" size={18} />,
     },
-    { href: "/reports", label: t("Отчёты", "Есептер"), icon: FileText },
+    {
+      href: "/reports",
+      label: t("Отчёты", "Есептер"),
+      icon: <BrandIcon name="report" size={18} />,
+    },
     {
       href: "/demo",
       label: t("Демонстрация", "Демонстрация"),
-      icon: FlaskConical,
+      icon: <BrandIcon name="calculator" size={18} />,
     },
   ];
   const selected = path.startsWith("/analyses/")
@@ -188,7 +191,7 @@ export function Application() {
                   : "")
               }
             >
-              <n.icon size={18} aria-hidden="true" />
+              {n.icon}
               <span>{n.label}</span>
             </Link>
           ))}
@@ -316,7 +319,7 @@ function Landing() {
               </Button>
               <Button asChild variant="secondary">
                 <Link href="/demo">
-                  <FlaskConical size={17} />
+                  <BrandIcon name="calculator" size={17} />
                   {t("Открыть демо", "Демоны ашу")}
                 </Link>
               </Button>
@@ -339,7 +342,7 @@ function Landing() {
           <div className="hero-product">
             <div className="preview-top">
               <span>
-                <ScanLine size={16} />
+                <BrandIcon name="tender-document" size={16} />
                 {t("Досье закупки", "Сатып алу досьесі")}
               </span>
               <span className="tag tag-blue">
@@ -362,7 +365,7 @@ function Landing() {
                 <strong>{kzt(sample?.budget, locale)}</strong>
               </div>
               <div className="preview-requirement">
-                <FileSearch size={20} />
+                <BrandIcon name="tender-document" size={20} />
                 <div>
                   <strong>
                     {sample?.items[0]?.name ||
@@ -430,7 +433,7 @@ function Landing() {
         </section>
         <section className="value-section">
           <div className="value-item">
-            <FileSearch size={25} />
+            <BrandIcon name="tender-document" size={25} />
             <h3>{t("Требования без догадок", "Болжамсыз талаптар")}</h3>
             <p>
               {t(
@@ -440,7 +443,7 @@ function Landing() {
             </p>
           </div>
           <div className="value-item">
-            <Boxes size={25} />
+            <BrandIcon name="product-match" size={25} />
             <h3>
               {t(
                 "Запасы с проверкой совместимости",
@@ -455,7 +458,7 @@ function Landing() {
             </p>
           </div>
           <div className="value-item">
-            <ChartNoAxesCombined size={25} />
+            <BrandIcon name="calculator" size={25} />
             <h3>{t("Прибыль и деньги отдельно", "Пайда мен қаражат бөлек")}</h3>
             <p>
               {t(

@@ -20,11 +20,9 @@ import {
 import {
   ArrowLeft,
   Download,
-  FileSearch,
   Check,
   AlertTriangle,
   HelpCircle,
-  Boxes,
   ArrowRight,
   Plus,
   Trash2,
@@ -37,6 +35,7 @@ import {
   ShieldCheck,
   Clock,
 } from "lucide-react";
+import { BrandIcon } from "./brand";
 import { Analysis, Tender, MatrixRow, Scenario, Status } from "@/lib/types";
 import { api, kzt, date } from "@/lib/api";
 import { useLocale } from "@/lib/context";
@@ -240,7 +239,7 @@ function Summary({
         </h2>
         <div>
           <button onClick={openMatrix}>
-            <FileSearch size={18} aria-hidden="true" />
+            <BrandIcon name="tender-document" size={18} />
             <span>
               <strong>{t("Требования", "Талаптар")}</strong>
               <small>
@@ -330,7 +329,7 @@ function Summary({
         <section className="panel">
           <div className="panel-heading">
             <h2>{t("План дозакупки", "Қосымша сатып алу жоспары")}</h2>
-            <Boxes size={18} />
+            <BrandIcon name="product-match" size={18} />
           </div>
           {a.matches!.selected.map((s, i) => (
             <div className="purchase-row" key={i}>
@@ -530,7 +529,7 @@ function Matrix({
                       size="sm"
                       onClick={() => onSource(m)}
                     >
-                      <FileSearch size={15} />
+                      <BrandIcon name="tender-document" size={15} />
                       {t("Источник", "Дереккөз")}
                     </Button>
                   </td>
@@ -618,7 +617,7 @@ function SourceDialog({
             </section>
             <section>
               <div className="evidence-heading">
-                <Boxes size={18} />
+                <BrandIcon name="catalog" size={18} />
                 <strong>
                   {t("Строка каталога", "Каталог жолы")} {row.row || "—"}
                 </strong>

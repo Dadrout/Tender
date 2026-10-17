@@ -4,15 +4,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  Radar,
   ArrowRight,
   RefreshCw,
-  Boxes,
-  FileSearch,
   MapPin,
   ExternalLink,
   AlertTriangle,
 } from "lucide-react";
+import { BrandIcon } from "./brand";
 import { api, kzt, date } from "@/lib/api";
 import { useLocale } from "@/lib/context";
 import {
@@ -33,7 +31,7 @@ export function ProvenanceNotice({
   if (!source?.historical) return null;
   return (
     <aside className="notice provenance-notice">
-      <FileSearch size={20} aria-hidden="true" />
+      <BrandIcon name="tender-document" size={20} />
       <div>
         <strong>
           {t("Исторический публичный документ", "Тарихи ашық құжат")}
@@ -140,7 +138,7 @@ export function OpportunityRadar() {
         <div>
           <span className="eyebrow">QAZBID INTELLIGENCE</span>
           <h2 id="radar-heading">
-            <Radar size={23} aria-hidden="true" />
+            <BrandIcon name="product-match" size={23} />
             {t("Подбор по каталогу", "Каталог бойынша іріктеу")}
           </h2>
           <p>
@@ -339,7 +337,7 @@ export function OpportunityRadar() {
                     </div>
                     <div className="opportunity-signals">
                       <span>
-                        <Boxes size={15} aria-hidden="true" />
+                        <BrandIcon name="catalog" size={15} />
                         {o.matched_items}/{o.total_items}{" "}
                         {t("позиций с кандидатом", "үміткері бар позиция")}
                       </span>

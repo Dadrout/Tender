@@ -9,8 +9,8 @@ catalog compatibility, profit and risk before participating in a tender.
 
 - Light workspace: cool neutral background, white navigation and surfaces,
   graphite text, blue primary actions. Dark theme uses equivalent semantic tokens.
-- Primary `#254EDB`, on-primary `#FFFFFF`; text `#17253B`; muted `#53647A`;
-  background `#F5F7FB`; panel `#FFFFFF`; border `#DCE3EE`.
+- Primary `#3458CB`, on-primary `#FFFFFF`; text `#23344B`; muted `#52647B`;
+  background `#F5F7FA`; panel `#FFFFFF`; border `#DEE5EF`.
 - Keep the bundled Noto Sans font for Russian and Kazakh coverage and offline use.
   Body text 14px; supporting text at least 12px, compact labels at least 11px.
   Headings 30/20/16px; tabular numbers in financial values.
@@ -46,3 +46,9 @@ The verified Data-Dense Dashboard style fits the analytical workspace. Generated
 marketing gateway and glassmorphism suggestions do not fit and are not adopted.
 Existing FastAPI requests and React Query remain the data layer; generic stack
 suggestions to migrate forms to Server Actions are unrelated to this visual work.
+
+## Comfort polish — 17 October 2026
+
+Requested: a calmer, smoother and friendlier interface. Keep the existing flow and data semantics. Use shared 140ms feedback and 220ms surface transitions with cubic-bezier(0.2,0.7,0.2,1). Hover/press must not move layout. Only the page heading fades in; reduced-motion disables animation and transitions. Controls keep visible keyboard focus. Mobile theme/menu controls have generous hit areas.
+
+The demo gives the first scenario a clear recommendation, labels example budgets and reserves the strongest primary action for that scenario. Other scenarios stay available as secondary actions. Surface tokens apply across the workspace in both themes.

@@ -9,7 +9,6 @@ import {
   ArrowUpRight,
   FileText,
   ArrowRight,
-  FlaskConical,
   Download,
   RotateCcw,
   Search,
@@ -18,9 +17,9 @@ import {
   Clock,
   AlertTriangle,
   FileSpreadsheet,
-  Compass,
   SlidersHorizontal,
 } from "lucide-react";
+import { BrandIcon } from "./brand";
 import { api, kzt, date } from "@/lib/api";
 import { Analysis, Discovery, Job } from "@/lib/types";
 import { useLocale } from "@/lib/context";
@@ -411,7 +410,7 @@ export function Demo() {
         }
       />
       <div className="notice">
-        <FlaskConical size={20} />
+        <BrandIcon name="tender-document" size={20} />
         <div>
           <strong>
             {t(
@@ -440,8 +439,18 @@ export function Demo() {
           {q.data
             ?.filter((d) => ["enamel", "brushes", "buckets"].includes(d.id))
             .map((d, i) => (
-              <section className="panel demo-card" key={d.id}>
-                <div className="demo-number">0{i + 1}</div>
+              <section
+                className={"panel demo-card" + (i === 0 ? " recommended" : "")}
+                key={d.id}
+              >
+                <div className="demo-card-top">
+                  <div className="demo-number">0{i + 1}</div>
+                  {i === 0 && (
+                    <span className="demo-recommendation">
+                      {t("Начните с этого", "Осыдан бастаңыз")}
+                    </span>
+                  )}
+                </div>
                 <span className="tag">
                   {t("Синтетический пример", "Синтетикалық мысал")}
                 </span>
@@ -449,12 +458,17 @@ export function Demo() {
                 <p>
                   {d.items[0]?.name} · {d.items[0]?.quantity} {d.items[0]?.unit}
                 </p>
+                <span className="demo-budget-label">
+                  {t("Бюджет примера", "Мысал бюджеті")}
+                </span>
                 <strong className="demo-budget">{kzt(d.budget)}</strong>
                 <ul>
                   <li>
+                    <Check size={14} aria-hidden="true" />
                     {t("Проверка характеристик", "Сипаттамаларды тексеру")}
                   </li>
                   <li>
+                    <Check size={14} aria-hidden="true" />
                     {i === 0
                       ? t(
                           "Остаток 8 из 12 · дозакупка",
@@ -466,6 +480,7 @@ export function Demo() {
                         )}
                   </li>
                   <li>
+                    <Check size={14} aria-hidden="true" />
                     {t(
                       "Прибыль, риски и PDF-отчёт",
                       "Пайда, тәуекелдер және PDF есебі",
@@ -473,6 +488,7 @@ export function Demo() {
                   </li>
                 </ul>
                 <Button
+                  variant={i === 0 ? "default" : "secondary"}
                   onClick={() => start.mutate(d.id)}
                   disabled={start.isPending}
                   className="full-width"
@@ -658,7 +674,7 @@ export function DiscoveryPage() {
         )}
       />
       <div className="notice">
-        <Compass size={20} />
+        <BrandIcon name="product-match" size={20} />
         <div>
           <strong>
             {t(
